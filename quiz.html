@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+      background: #fff;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      margin: 10px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .btn:hover {
+      background: #45a049;
+    }
+    .question {
+      margin: 20px 0;
+    }
+    .options label {
+      display: block;
+      margin: 8px 0;
+      cursor: pointer;
+    }
+    #timer {
+      font-size: 18px;
+      text-align: right;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="home">
+    <h1>Welcome to the Quiz App</h1>
+    <h2>Select a Category</h2>
+    <button class="btn" onclick="startQuiz('html')">HTML</button>
+    <button class="btn" onclick="startQuiz('java')">Java</button>
+    <button class="btn" onclick="startQuiz('c')">C</button>
+    <button class="btn" onclick="startQuiz('python')">Python</button>
+  </div>
+
+  <div class="container" id="quiz" style="display:none;">
+    <div id="timer">Time Left: 10:00</div>
+    <h2 id="quiz-title"></h2>
+    <form id="quiz-form"></form>
+    <button class="btn" onclick="submitQuiz()">Submit</button>
+  </div>
+
+  <div class="container" id="result" style="display:none;">
+    <h2>Quiz Result</h2>
+    <p id="score"></p>
+    <button class="btn" onclick="location.reload()">Try Another Quiz</button>
+  </div>
+
+  <script>
+    const quizData = {
+        html: [
+  { question: "What does HTML stand for?", options: ["Hyper Text Markup Language", "High Text Machine Language", "Hyperlinks and Text Markup Language", "None of these"], answer: "Hyper Text Markup Language" },
+  { question: "Who is making the Web standards?", options: ["Mozilla", "Microsoft", "The World Wide Web Consortium", "Google"], answer: "The World Wide Web Consortium" },
+  { question: "HTML elements are represented by?", options: ["Tags", "Attributes", "Scripts", "Links"], answer: "Tags" },
+  { question: "Choose the correct HTML element for the largest heading:", options: ["&lt;h1&gt;", "&lt;heading&gt;", "&lt;h6&gt;", "&lt;head&gt;"], answer: "&lt;h1&gt;" },
+  { question: "What is the correct HTML for creating a hyperlink?", options: ["&lt;a href='url'&gt;link&lt;/a&gt;", "&lt;a url='link'&gt;", "&lt;a&gt;link&lt;/a&gt;", "&lt;link href='url'&gt;"], answer: "&lt;a href='url'&gt;link&lt;/a&gt;" },
+  { question: "Which tag is used to define a table row?", options: ["&lt;td&gt;", "&lt;tr&gt;", "&lt;th&gt;", "&lt;table&gt;"], answer: "&lt;tr&gt;" },
+  { question: "Which HTML attribute is used to define inline styles?", options: ["class", "font", "style", "styles"], answer: "style" },
+  { question: "Which doctype declaration is correct?", options: ["&lt;!DOCTYPE html&gt;", "&lt;doctype html&gt;", "&lt;!DOCTYPE HTML5&gt;", "&lt;doctype&gt;"], answer: "&lt;!DOCTYPE html&gt;" },
+  { question: "How can you make a numbered list?", options: ["&lt;ol&gt;", "&lt;ul&gt;", "&lt;dl&gt;", "&lt;list&gt;"], answer: "&lt;ol&gt;" },
+  { question: "What is the correct HTML for inserting an image?", options: ["&lt;img src='img.jpg'&gt;", "&lt;image src='img.jpg'&gt;", "&lt;img href='img.jpg'&gt;", "&lt;img link='img.jpg'&gt;"], answer: "&lt;img src='img.jpg'&gt;" },
+  { question: "What is the purpose of the alt attribute?", options: ["Provides alternate text", "Styles the image", "Changes image size", "None"], answer: "Provides alternate text" },
+  { question: "Which tag is used to define a cell in a table?", options: ["&lt;tr&gt;", "&lt;td&gt;", "&lt;table&gt;", "&lt;th&gt;"], answer: "&lt;td&gt;" },
+  { question: "How do you write a comment in HTML?", options: ["&lt;!-- comment --&gt;", "// comment", "' comment", "/* comment */"], answer: "&lt;!-- comment --&gt;" },
+  { question: "Which tag creates a line break?", options: ["&lt;br&gt;", "&lt;lb&gt;", "&lt;break&gt;", "&lt;newline&gt;"], answer: "&lt;br&gt;" },
+  { question: "Which HTML element defines emphasized text?", options: ["&lt;em&gt;", "&lt;i&gt;", "&lt;strong&gt;", "&lt;italic&gt;"], answer: "&lt;em&gt;" },
+  { question: "How can you open a link in a new tab?", options: ["target='_blank'", "newtab='true'", "window='_blank'", "target='new'"], answer: "target='_blank'" },
+  { question: "What does the &lt;meta&gt; tag provide?", options: ["Metadata", "Headings", "Tables", "Paragraphs"], answer: "Metadata" },
+  { question: "Which tag is used to define a list item?", options: ["&lt;li&gt;", "&lt;ul&gt;", "&lt;ol&gt;", "&lt;item&gt;"], answer: "&lt;li&gt;" },
+  { question: "HTML files must have a file extension of?", options: [".html", ".htm", ".xml", ".html or .htm"], answer: ".html or .htm" },
+  { question: "Which input type defines a checkbox?", options: ["checkbox", "check", "option", "tickbox"], answer: "checkbox" },
+  { question: "Which element is used for a drop-down list?", options: ["&lt;select&gt;", "&lt;dropdown&gt;", "&lt;list&gt;", "&lt;input type='dropdown'&gt;"], answer: "&lt;select&gt;" },
+  { question: "What tag is used to create a table?", options: ["&lt;table&gt;", "&lt;tab&gt;", "&lt;tbody&gt;", "&lt;tbl&gt;"], answer: "&lt;table&gt;" },
+  { question: "What tag is used to define the document's body?", options: ["&lt;body&gt;", "&lt;main&gt;", "&lt;docbody&gt;", "&lt;content&gt;"], answer: "&lt;body&gt;" },
+  { question: "HTML is considered to be?", options: ["A markup language", "A programming language", "A scripting language", "An operating system"], answer: "A markup language" },
+  { question: "Which HTML tag is used for italic text?", options: ["&lt;i&gt;", "&lt;italic&gt;", "&lt;em&gt;", "&lt;it&gt;"], answer: "&lt;i&gt;" }
+],
+
+      java: [
+        { question: "What is JVM?", options: ["Java Virtual Machine", "Java Vendor Machine", "Java Very Large Machine", "None"], answer: "Java Virtual Machine" },
+        { question: "Which keyword is used to create a subclass in Java?", options: ["extends", "implements", "this", "super"], answer: "extends" },
+        { question: "Java is a ___ language?", options: ["Compiled", "Interpreted", "Both", "None"], answer: "Both" },
+        { question: "Which keyword is used to inherit a class?", options: ["extends", "inherit", "super", "this"], answer: "extends" },
+        { question: "Which method is the entry point of a Java program?", options: ["main()", "start()", "run()", "init()"], answer: "main()" },
+        { question: "Which of the following is not a Java keyword?", options: ["class", "interface", "goto", "unsigned"], answer: "unsigned" },
+        { question: "Which package contains Scanner class?", options: ["java.util", "java.io", "java.net", "java.lang"], answer: "java.util" },
+        { question: "Which is not a primitive data type in Java?", options: ["String", "int", "float", "char"], answer: "String" },
+        { question: "What is bytecode?", options: ["Intermediate code", "Machine code", "Source code", "None"], answer: "Intermediate code" },
+        { question: "Which operator is used for comparison?", options: ["==", "=", "!", "&"], answer: "==" },
+        { question: "Which keyword is used for interface implementation?", options: ["implements", "extends", "inherits", "uses"], answer: "implements" },
+        { question: "Which collection class allows you to grow or shrink its size?", options: ["ArrayList", "Array", "LinkedList", "HashSet"], answer: "ArrayList" },
+        { question: "Which exception is thrown when dividing by zero?", options: ["ArithmeticException", "NullPointerException", "IOException", "SQLException"], answer: "ArithmeticException" },
+        { question: "Java supports multiple inheritance through?", options: ["Interfaces", "Classes", "Methods", "Constructors"], answer: "Interfaces" },
+        { question: "Which is used to handle exceptions?", options: ["try-catch", "do-while", "for-loop", "if-else"], answer: "try-catch" },
+        { question: "What is the size of an int in Java?", options: ["4 bytes", "2 bytes", "1 byte", "8 bytes"], answer: "4 bytes" },
+        { question: "Which method is used to compare two strings?", options: ["equals()", "==", "compare()", "isSame()"], answer: "equals()" },
+        { question: "Which keyword prevents inheritance?", options: ["final", "static", "private", "void"], answer: "final" },
+        { question: "Which class is parent of all classes?", options: ["Object", "Main", "Class", "Super"], answer: "Object" },
+        { question: "Which keyword is used to create an object?", options: ["new", "create", "object", "class"], answer: "new" },
+        { question: "What is method overloading?", options: ["Same name, different parameters", "Same name, same parameters", "Different name, same parameters", "None"], answer: "Same name, different parameters" },
+        { question: "Which block is always executed?", options: ["finally", "catch", "try", "throw"], answer: "finally" },
+        { question: "Which operator is used for logical AND?", options: ["&&", "&", "||", "!"], answer: "&&" },
+        { question: "Which access modifier is most restrictive?", options: ["private", "protected", "public", "default"], answer: "private" },
+        { question: "What is encapsulation?", options: ["Binding data and methods", "Inheritance", "Abstraction", "None"], answer: "Binding data and methods" }
+      ],
+      c: [
+        { question: "Who is the father of C language?", options: ["Dennis Ritchie", "James Gosling", "Bjarne Stroustrup", "Guido van Rossum"], answer: "Dennis Ritchie" },
+        { question: "What is the file extension of a C program file?", options: [".c", ".cpp", ".java", ".py"], answer: ".c" },
+        // Add 23 more C questions here similarly...
+        { question: "C language was developed at?", options: ["Bell Labs", "MIT", "Stanford", "Microsoft"], answer: "Bell Labs" },
+        { question: "What is sizeof(char)?", options: ["1 byte", "2 bytes", "4 bytes", "Depends"], answer: "1 byte" },
+        { question: "Which is used for comments in C?", options: ["// or /* */", "#comment", "<!-- -->", "--"], answer: "// or /* */" },
+        { question: "Which header file is used for printf?", options: ["stdio.h", "conio.h", "stdlib.h", "string.h"], answer: "stdio.h" },
+        { question: "Which loop checks condition first?", options: ["while", "do-while", "for", "all"], answer: "while" },
+        { question: "Which keyword is used to define a constant?", options: ["const", "static", "define", "fixed"], answer: "const" },
+        { question: "What is the return type of main()?", options: ["int", "void", "char", "float"], answer: "int" },
+        { question: "Which function is used to get input from user?", options: ["scanf", "printf", "getchar", "gets"], answer: "scanf" },
+        { question: "Which function is used to copy strings?", options: ["strcpy", "strcat", "strlen", "strcmp"], answer: "strcpy" },
+        { question: "Which operator is used for modulo?", options: ["%", "*", "/", "//"], answer: "%" },
+        { question: "Which function returns length of string?", options: ["strlen", "strcpy", "strcmp", "sizeof"], answer: "strlen" },
+        { question: "What is the default return type of a function?", options: ["int", "void", "float", "char"], answer: "int" },
+        { question: "Which function is used to exit a program?", options: ["exit()", "return", "break", "end"], answer: "exit()" },
+        { question: "C is a ___ level language.", options: ["Middle", "High", "Low", "None"], answer: "Middle" },
+        { question: "Which operator is used for logical AND?", options: ["&&", "&", "||", "!"], answer: "&&" },
+        { question: "Which data type is used to store characters?", options: ["char", "int", "float", "string"], answer: "char" },
+        { question: "What is a pointer?", options: ["Variable holding address", "Normal variable", "Function", "None"], answer: "Variable holding address" },
+        { question: "What is used to declare a pointer?", options: ["*", "&", "%", "#"], answer: "*" },
+        { question: "What is the output of 5/2 in C?", options: ["2", "2.5", "3", "Error"], answer: "2" },
+        { question: "Which symbol is used for preprocessor?", options: ["#", "$", "@", "%"], answer: "#" },
+        { question: "Which loop is used when the number of iterations is known?", options: ["for", "while", "do-while", "goto"], answer: "for" }
+      ],
+      python: [
+        { question: "What is the output of print(2**3)?", options: ["8", "6", "9", "7"], answer: "8" },
+        { question: "Which keyword is used for function in Python?", options: ["function", "fun", "def", "define"], answer: "def" },
+        // Add 23 more Python questions here...
+        { question: "Python is ___ typed language.", options: ["dynamically", "statically", "strongly", "loosely"], answer: "dynamically" },
+        { question: "Which symbol is used for comments?", options: ["#", "//", "/* */", "--"], answer: "#" },
+        { question: "Which keyword is used for loop?", options: ["for", "loop", "iterate", "do"], answer: "for" },
+        { question: "How to start a function?", options: ["def", "function", "fun", "start"], answer: "def" },
+        { question: "Which data type is immutable?", options: ["tuple", "list", "dict", "set"], answer: "tuple" },
+        { question: "How to import a module?", options: ["import", "include", "require", "using"], answer: "import" },
+        { question: "Which function gets user input?", options: ["input()", "get()", "scanf()", "read()"], answer: "input()" },
+        { question: "What is the result of 10//3?", options: ["3", "3.33", "4", "3.0"], answer: "3" },
+        { question: "What is None in Python?", options: ["Null value", "Zero", "Empty string", "False"], answer: "Null value" },
+        { question: "Which data type is used for true/false?", options: ["bool", "boolean", "bit", "int"], answer: "bool" },
+        { question: "Which operator is used for exponent?", options: ["**", "^", "*", "//"], answer: "**" },
+        { question: "Which loop guarantees one execution?", options: ["while True", "for", "while", "None"], answer: "while True" },
+        { question: "What is used to handle exceptions?", options: ["try-except", "if-else", "loop", "goto"], answer: "try-except" },
+        { question: "Which is not a keyword?", options: ["eval", "finally", "nonlocal", "assert"], answer: "eval" },
+        { question: "What is type of [1, 2, 3]?", options: ["list", "tuple", "dict", "set"], answer: "list" },
+        { question: "Which method adds item to a list?", options: ["append()", "add()", "insert()", "push()"], answer: "append()" },
+        { question: "Which statement is used to exit loop?", options: ["break", "exit", "stop", "return"], answer: "break" },
+        { question: "What is the output of len('abc')?", options: ["3", "2", "4", "1"], answer: "3" },
+        { question: "Which collection is unordered?", options: ["set", "list", "tuple", "dict"], answer: "set" },
+        { question: "What is the file extension of Python files?", options: [".py", ".java", ".c", ".txt"], answer: ".py" },
+        { question: "Which built-in function is used to convert string to int?", options: ["int()", "str()", "float()", "input()"], answer: "int()" }
+      ]
+    };
+  
+  
+
+    let selectedCategory = "";
+    let timerInterval;
+    let timeLeft = 600; // 10 minutes
+
+    function startQuiz(category) {
+      selectedCategory = category;
+      document.getElementById("home").style.display = "none";
+      document.getElementById("quiz").style.display = "block";
+      document.getElementById("quiz-title").innerText = `Category: ${category.toUpperCase()}`;
+      displayQuestions();
+      startTimer();
+    }
+
+    function displayQuestions() {
+      const form = document.getElementById("quiz-form");
+      form.innerHTML = "";
+      quizData[selectedCategory].forEach((q, idx) => {
+        const questionBlock = document.createElement("div");
+        questionBlock.classList.add("question");
+        questionBlock.innerHTML = `
+          <p><strong>Q${idx + 1}: ${q.question}</strong></p>
+          <div class="options">
+            ${q.options.map((opt, i) => `
+              <label><input type="radio" name="q${idx}" value="${opt}" /> ${opt}</label>
+            `).join("")}
+          </div>
+        `;
+        form.appendChild(questionBlock);
+      });
+    }
+
+    function submitQuiz() {
+      clearInterval(timerInterval);
+      const form = document.getElementById("quiz-form");
+      const inputs = new FormData(form);
+      let score = 0;
+      quizData[selectedCategory].forEach((q, idx) => {
+        if (inputs.get(`q${idx}`) === q.answer) score++;
+      });
+
+      document.getElementById("quiz").style.display = "none";
+      document.getElementById("result").style.display = "block";
+      document.getElementById("score").innerText = `You scored ${score} out of ${quizData[selectedCategory].length}.`;
+    }
+
+    function startTimer() {
+      const timerDisplay = document.getElementById("timer");
+      timerInterval = setInterval(() => {
+        let minutes = Math.floor(timeLeft / 60);
+        let seconds = timeLeft % 60;
+        timerDisplay.innerText = `Time Left: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        if (--timeLeft < 0) {
+          clearInterval(timerInterval);
+          alert("Time's up!");
+          submitQuiz();
+        }
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
